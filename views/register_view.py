@@ -5,7 +5,7 @@ import tkinter
 class RegisterView(tkinter.Toplevel):
     def __init__(self, user_controller):
         super().__init__()
-        self.controller = user_controller
+        self.user_controller = user_controller
         self.title("Register")
         self.geometry("400x300")
         self.resizable(width=False, height=False)
@@ -46,4 +46,5 @@ class RegisterView(tkinter.Toplevel):
         firstname = self.firstname_entry.get()
         lastname = self.lastname_entry.get()
         password = self.password_entry.get()
-        self.controller.handle_register(username, firstname, lastname, password, self)
+        self.user_controller.handle_register(username, firstname, lastname, password, self)
+    

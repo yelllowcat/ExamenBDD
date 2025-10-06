@@ -37,17 +37,19 @@ class LoginView(tkinter.Tk):
         self.register_button.grid(row=3, column=0, columnspan=2, pady=5, padx=5)
 
     def _default_login(self):
-        print("Default login action - no callback set yet")
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        self.user_controller.handle_login(username, password, self)
 
     def _default_register(self):
         self.user_controller.show_register_window()
-        print("Default register action - no callback set yet")
+        
 
     def on_login(self, callback):
         """Set the login button callback"""
         print("Setting login callback")
         self.login_button.config(command=callback)
-
+        
     def on_register(self, callback):
         
         print("Setting register callback")
