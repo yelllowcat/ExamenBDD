@@ -14,7 +14,7 @@ class UserController():
         self.user_model = user_model
         self.login_view = None
         self.register_view = None
-        self.home_view = None  # <-- Add this line
+        self.home_view = None 
         self.create_account_view = None
         self.transfer_funds_view = None
         self.consult_balance_view = None
@@ -28,11 +28,11 @@ class UserController():
             self.register_view = RegisterView(self)
         self.register_view.lift()
 
-    def show_home_window(self):
+    def show_home_window(self, email):
         if self.home_view is None or not self.home_view.winfo_exists():
-            self.home_view = HomeView(self)
+            self.home_view = HomeView(self, email)
         self.home_view.lift()
-        
+
     def handle_register(self, username, firstname, lastname, password, window):
         if not all([username, firstname, lastname, password]):
             messagebox.showerror("Error", "Todos los campos son obligatorios!")
@@ -42,17 +42,17 @@ class UserController():
             messagebox.showinfo("Success", "User registered successfully! You can now log in.")
             window.destroy()
 
-    def handle_login(self, username, password, window):
-        if not all([username, password]):
+    def handle_login(self, email, password, window):
+        if not all([email, password]):
             messagebox.showerror("Error", "Both fields are required!")
             return
-        
-        if self.user_model.authenticate_user(username, password):
+
+        if self.user_model.authenticate_user(email, password):
             messagebox.showinfo("Success", "Login successful!")
             window.withdraw()
-            self.show_home_window()
+            self.show_home_window( email)
         else:
-            messagebox.showerror("Error", "Invalid username or password!")
+            messagebox.showerror("Error", "Invalid email or password!")
 
     def handle_create_account(self, initial_balance, user_id):
         if self.user_model.open_account(initial_balance, user_id):
@@ -87,5 +87,46 @@ class UserController():
 
     def get_transaction_history(self):
         return self.user_model.get_transaction_history()
+
+
+    def populate_user_accounts(self, email, combobox):
+        try:
+            accounts = self.user_model.get_user_accounts(email)  # get from DB
+            if not accounts:
+                combobox['values'] = ["No tienes cuentas registradas"]
+                combobox.current(0)
+                return
+
+            # Format accounts like "12345678 - $1500.00"
+            formatted_accounts = [
+                f"{acc['numero_cuenta']} - ${acc['saldo']:.2f} ({acc['estado']})"
+                for acc in accounts
+            ]
+
+            combobox['values'] = formatted_accounts
+            combobox.current(0)  # Select the first account by default
+
+            # Optional: keep a mapping for quick access later
+            self.account_map = {acc['numero_cuenta']: acc['id'] for acc in accounts}
+
+        except Exception as e:
+            print(f"Error populating accounts: {e}")
+            combobox['values'] = ["Error loading accounts"]
+            combobox.current(0)
+
+    def get_user_accounts(self, email):
+        accounts = self.user_model.get_user_accounts(email)
+        if not accounts:
+            return []
+
+        # Example format: ["12345678 - $1500.00", "87654321 - $320.00"]
+        formatted = [
+            f"{acc['numero_cuenta']} - ${acc['saldo']:.2f}" for acc in accounts
+        ]
+        return formatted
     
-   
+    def get_username(self, email):
+        user_details = self.user_model.get_user_details(email)
+        if user_details:
+            return user_details.get("username", "Usuario")
+        return "Usuario"

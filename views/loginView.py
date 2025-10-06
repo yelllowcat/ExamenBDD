@@ -17,11 +17,11 @@ class LoginView(tkinter.Tk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        # Username section
-        self.username_label = tkinter.Label(self, text="Usuario:")
-        self.username_entry = tkinter.Entry(self)
-        self.username_label.grid(row=0, column=0, padx=10, pady=10, sticky="e")
-        self.username_entry.grid(row=0, column=1, padx=10, pady=10)
+        # Email section
+        self.email_label = tkinter.Label(self, text="Email:")
+        self.email_entry = tkinter.Entry(self)
+        self.email_label.grid(row=0, column=0, padx=10, pady=10, sticky="e")
+        self.email_entry.grid(row=0, column=1, padx=10, pady=10)
 
         # Password section
         self.password_label = tkinter.Label(self, text="Contraseña:")
@@ -37,9 +37,9 @@ class LoginView(tkinter.Tk):
         self.register_button.grid(row=3, column=0, columnspan=2, pady=5, padx=5)
 
     def _default_login(self):
-        username = self.username_entry.get()
+        email = self.email_entry.get()
         password = self.password_entry.get()
-        self.user_controller.handle_login(username, password, self)
+        self.user_controller.handle_login(email, password, self)
 
     def _default_register(self):
         self.user_controller.show_register_window()

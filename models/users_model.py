@@ -151,5 +151,27 @@ class UserModel:
         finally:
             if conn.is_connected(): 
                 conn.close()
-                
-  
+    
+    
+    def get_user_accounts(self, email):
+        conn = DBConnector.get_connection()
+        if conn is None:
+            return []
+        try:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT c.id, c.numero_cuenta, c.saldo, c.estado
+                FROM cuentas AS c
+                INNER JOIN usuarios AS u ON c.usuario_id = u.id
+                WHERE u.email = %s
+                ORDER BY c.id;
+            """, (email,))
+            return cursor.fetchall()
+
+        except Exception as e:
+            print(f"Error al obtener cuentas del usuario: {e}")
+            return []
+        finally:
+            if conn.is_connected():
+                conn.close()
+
