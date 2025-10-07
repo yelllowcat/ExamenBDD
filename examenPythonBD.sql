@@ -69,16 +69,17 @@ END$$
 
 DELIMITER ;
 
--- 2. Procedimiento para abrir una cuenta bancaria
-DELIMITER $$
 
+-- 2. Procedimiento para abrir una cuenta bancaria
+
+DELIMITER $$
 CREATE PROCEDURE abrir_cuenta(
-    IN p_numero_cuenta VARCHAR(255),
     IN p_saldo_inicial DECIMAL(12,2),
     IN p_usuario_id INT
 )
 BEGIN
     DECLARE v_cuenta_id INT;
+    DECLARE v_numero_cuenta VARCHAR(255);
     
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -101,9 +102,27 @@ BEGIN
         SET MESSAGE_TEXT = 'El saldo inicial no puede ser negativo';
     END IF;
     
+    -- Generar número de cuenta aleatorio inline
+    SELECT CONCAT(
+        '1001-',
+        LPAD(FLOOR(RAND() * 10000), 4, '0'), '-',
+        LPAD(FLOOR(RAND() * 10000), 4, '0'), '-',
+        LPAD(FLOOR(RAND() * 10000), 4, '0')
+    ) INTO v_numero_cuenta;
+    
+    -- Verificar que el número no exista (muy poco probable pero seguro)
+    WHILE EXISTS (SELECT 1 FROM cuentas WHERE numero_cuenta = v_numero_cuenta) DO
+        SELECT CONCAT(
+            '1001-',
+            LPAD(FLOOR(RAND() * 10000), 4, '0'), '-',
+            LPAD(FLOOR(RAND() * 10000), 4, '0'), '-',
+            LPAD(FLOOR(RAND() * 10000), 4, '0')
+        ) INTO v_numero_cuenta;
+    END WHILE;
+    
     -- Crear cuenta
     INSERT INTO cuentas (numero_cuenta, saldo, usuario_id)
-    VALUES (p_numero_cuenta, p_saldo_inicial, p_usuario_id);
+    VALUES (v_numero_cuenta, p_saldo_inicial, p_usuario_id);
     
     SET v_cuenta_id = LAST_INSERT_ID();
     
@@ -112,6 +131,9 @@ BEGIN
     VALUES ('APERTURA', v_cuenta_id, p_saldo_inicial, 'Apertura de cuenta');
     
     COMMIT;
+    
+    -- Retornar el número de cuenta generado
+    SELECT v_numero_cuenta AS numero_cuenta_generado, v_cuenta_id AS cuenta_id;
 END$$
 
 DELIMITER ;
@@ -267,9 +289,33 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE PROCEDURE obtener_detalles_usuario(
+    IN p_email VARCHAR(100)
+)
+BEGIN
+    -- Validar que el email no esté vacío
+    IF p_email IS NULL OR p_email = '' THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'El email es obligatorio';
+    END IF;
+    
+    -- Obtener detalles del usuario
+    SELECT 
+		id,
+        email,
+        nombre,
+        apellidos
+    FROM usuarios
+    WHERE email = p_email;
+    
+END$$
+
+DELIMITER ;
+
 -- PRUEBAS DEL PROCEDIMIENTO
--- -----------------------------------
-select * from usuarios;
+
 -- Inicio de sesión exitoso
 CALL iniciar_sesion(
     'juan.perez@email.com',
@@ -281,3 +327,188 @@ CALL iniciar_sesion(
     'maria.lopez@email.com',
     '$2y$10$zyxwvutsrqponmlkjihgfedcba654321'
 );
+
+
+-- Usuario 1
+CALL registrar_usuario(
+    'juan.perez@email.com',
+    'Juan',
+    'Pérez García',
+    '$2y$10$abcdefghijklmnopqrstuvwxyz123456'
+);
+
+-- Usuario 2
+CALL registrar_usuario(
+    'maria.lopez@email.com',
+    'María',
+    'López Martínez',
+    '$2y$10$zyxwvutsrqponmlkjihgfedcba654321'
+);
+
+-- Usuario 3
+CALL registrar_usuario(
+    'carlos.ruiz@email.com',
+    'Carlos',
+    'Ruiz Hernández',
+    '$2y$10$1234567890abcdefghijklmnopqrstuv'
+);
+
+-- 2. PROBAR ABRIR CUENTAS
+-- -----------------------------------
+
+-- Cuenta para Usuario 1 (ID 1) con saldo inicial de 5000
+CALL abrir_cuenta(
+    '1001-2345-6789-0001',
+    5000.00,
+    1
+);
+
+-- Cuenta para Usuario 2 (ID 2) con saldo inicial de 3000
+CALL abrir_cuenta(
+    '1001-2345-6789-0002',
+    3000.00,
+    2
+);
+
+-- Cuenta para Usuario 3 (ID 3) con saldo inicial de 10000
+CALL abrir_cuenta(
+    10000.00,
+    4
+);
+
+-- Segunda cuenta para Usuario 1
+CALL abrir_cuenta(
+    2000.00,
+    1
+);
+
+-- 3. PROBAR TRANSFERENCIAS
+-- -----------------------------------
+
+-- Transferencia de cuenta 1 a cuenta 2 (entre diferentes usuarios)
+CALL transferir_dinero(
+    1,  -- cuenta origen
+    2,  -- cuenta destino
+    500.00,  -- monto
+    'Pago de servicios'
+);
+
+-- Transferencia de cuenta 3 a cuenta 1
+CALL transferir_dinero(
+    3,
+    1,
+    1500.00,
+    'Préstamo personal'
+);
+
+-- Transferencia entre cuentas del mismo usuario (cuenta 1 a cuenta 4)
+CALL transferir_dinero(
+    1,
+    4,
+    1000.00,
+    'Ahorro mensual'
+);
+
+-- Transferencia de cuenta 2 a cuenta 3
+CALL transferir_dinero(
+    2,
+    3,
+    800.00,
+    'Pago de compra'
+);
+
+-- 4. VERIFICAR RESULTADOS
+-- -----------------------------------
+
+-- Ver usuarios registrados
+SELECT * FROM usuarios;
+
+SELECT * FROM movimientos;
+
+-- Ver cuentas creadas con sus saldos
+SELECT c.id, c.numero_cuenta, c.saldo, c.estado, u.nombre, u.apellidos
+FROM cuentas c
+JOIN usuarios u ON c.usuario_id = u.id;
+
+-- Ver todos los movimientos
+SELECT 
+    m.id,
+    m.tipo_movimiento,
+    m.cuenta_salida_id,
+    m.cuenta_entrada_id,
+    m.monto,
+    m.fecha_operacion,
+    m.nota
+FROM movimientos m
+ORDER BY m.fecha_operacion;
+use fintech;
+
+SELECT 			m.id,
+                m.tipo_movimiento,
+                cs.numero_cuenta AS cuenta_salida,
+                ce.numero_cuenta AS cuenta_entrada,
+                m.monto,
+                m.fecha_operacion,
+                m.nota
+            FROM movimientos m
+            LEFT JOIN cuentas cs ON m.cuenta_salida_id = cs.id
+            LEFT JOIN cuentas ce ON m.cuenta_entrada_id = ce.id
+            WHERE cs.numero_cuenta ="1001-4523-6100-6930"
+               OR ce.numero_cuenta ="1001-4523-6100-6930" ORDER BY m.fecha_operacion DESC;
+     
+SELECT
+    m.tipo_movimiento,
+    cs.numero_cuenta AS cuenta_salida,
+    ce.numero_cuenta AS cuenta_entrada,
+    m.monto,
+    m.fecha_operacion,
+    m.nota
+FROM movimientos m
+LEFT JOIN cuentas cs ON m.cuenta_salida_id = cs.id
+LEFT JOIN cuentas ce ON m.cuenta_entrada_id = ce.id
+WHERE cs.numero_cuenta =1001-4523-6100-6930
+   OR ce.numero_cuenta =1001-4523-6100-6930
+ORDER BY m.fecha_operacion DESC;
+
+
+SELECT 
+                m.tipo_movimiento,
+                cs.numero_cuenta AS cuenta_salida,
+                ce.numero_cuenta AS cuenta_entrada,
+                m.monto,
+                m.fecha_operacion,
+                m.nota
+            FROM movimientos m
+            LEFT JOIN cuentas cs ON m.cuenta_salida_id = cs.id
+            LEFT JOIN cuentas ce ON m.cuenta_entrada_id = ce.id
+            WHERE m.cuenta_salida_id =1001-4523-6100-6930
+               OR m.cuenta_entrada_id =1001-4523-6100-6930
+            ORDER BY m.fecha_operacion DESC;
+-- Ver movimientos con información de las cuentas
+SELECT 
+    m.tipo_movimiento,
+    cs.numero_cuenta AS cuenta_salida,
+    ce.numero_cuenta AS cuenta_entrada,
+    m.monto,
+    m.fecha_operacion,
+    m.nota
+FROM movimientos m
+LEFT JOIN cuentas cs ON m.cuenta_salida_id = cs.id
+LEFT JOIN cuentas ce ON m.cuenta_entrada_id = ce.id
+ORDER BY m.fecha_operacion;
+
+DELIMITER $$
+
+SELECT 
+                    id, 
+                    tipo_movimiento, 
+                    cuenta_salida_id, 
+                    cuenta_entrada_id, 
+                    monto, 
+                    fecha_operacion, 
+                    nota 
+                FROM movimientos 
+                WHERE cuenta_salida_id = 4 or cuenta_entrada_id=4
+            ORDER BY fecha_operacion DESC;
+
+select * from usuarios;
