@@ -1,12 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+block_cipher = None
 
 a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
-    hiddenimports=[],
+    datas=[('.env.example', '.'), ('examenPythonBD.sql', '.')],
+    hiddenimports=['mysql.connector', 'dotenv', '_mysql_connector'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -14,15 +15,17 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
-pyz = PYZ(a.pure)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
     pyz,
     a.scripts,
     a.binaries,
+    a.zipfiles,
     a.datas,
     [],
-    name='main',
+    name='SistemaBancario',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

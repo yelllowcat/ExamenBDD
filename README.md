@@ -5,6 +5,7 @@ Sistema de gestión bancaria desarrollado en Python con interfaz gráfica Tkinte
 ## 📋 Tabla de Contenidos
 
 - [Características](#características)
+- [Descarga Rápida](#descarga-rápida)
 - [Requisitos Previos](#requisitos-previos)
 - [Instalación](#instalación)
 - [Configuración](#configuración)
@@ -13,6 +14,7 @@ Sistema de gestión bancaria desarrollado en Python con interfaz gráfica Tkinte
 - [Base de Datos](#base-de-datos)
 - [Arquitectura](#arquitectura)
 - [Funcionalidades](#funcionalidades)
+- [Compilar Ejecutable](#compilar-ejecutable)
 - [Contribuir](#contribuir)
 
 ## ✨ Características
@@ -37,6 +39,18 @@ Sistema de gestión bancaria desarrollado en Python con interfaz gráfica Tkinte
   - Consulta de historial completo de movimientos
   - Visualización detallada de transferencias entrantes y salientes
   - Filtrado por cuenta
+
+## 🚀 Descarga Rápida
+
+¿Solo quieres usar la aplicación sin instalar Python? Descarga el ejecutable:
+
+- **Linux**: [SistemaBancario-Linux-v1.0.tar.gz](https://github.com/yelllowcat/ExamenBDD/releases)
+- **Windows**: Compila desde el código fuente (ver [COMPILAR.md](COMPILAR.md))
+- **macOS**: Compila desde el código fuente (ver [COMPILAR.md](COMPILAR.md))
+
+**Requisitos mínimos**: MySQL 5.7+ instalado y configurado.
+
+Ver [INSTRUCCIONES_EJECUTABLE.md](INSTRUCCIONES_EJECUTABLE.md) para instrucciones de instalación del ejecutable.
 
 ## 🔧 Requisitos Previos
 
@@ -228,6 +242,39 @@ El proyecto sigue el patrón **MVC (Modelo-Vista-Controlador)**:
 - Validar y sanitizar todas las entradas de usuario
 - Implementar logging de auditoría
 - Usar variables de entorno para credenciales sensibles
+
+## 📦 Compilar Ejecutable
+
+Para crear un ejecutable independiente de la aplicación:
+
+### Instalación de PyInstaller
+
+```bash
+pip install pyinstaller
+```
+
+### Compilar
+
+```bash
+# Activar entorno virtual
+source .venv/bin/activate  # Linux/Mac
+.venv\Scripts\activate     # Windows
+
+# Compilar usando el archivo de especificación
+pyinstaller main.spec
+```
+
+El ejecutable estará en `dist/SistemaBancario`
+
+### Crear Paquete de Distribución
+
+```bash
+# Linux/Mac
+chmod +x crear_paquete.sh
+./crear_paquete.sh
+```
+
+Para instrucciones detalladas, consulta [COMPILAR.md](COMPILAR.md).
 
 ## 🤝 Contribuir
 
