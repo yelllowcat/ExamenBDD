@@ -314,6 +314,30 @@ END$$
 
 DELIMITER ;
 
+-- DATOS PARA PRUEBAS
+
+INSERT INTO usuarios (email, nombre, apellidos, password_hash) VALUES
+('david@mail.com', 'David', 'Gonzalez', 'hash123'),
+('ana@mail.com', 'Ana', 'López', 'hash456'),
+('luis@mail.com', 'Luis', 'Martínez', 'hash789'),
+('carla@mail.com', 'Carla', 'Fernández', 'hash101');
+
+INSERT INTO cuentas (numero_cuenta, saldo, estado, usuario_id) VALUES
+('ACC10001', 1000.00, 'ACTIVA', 1),   -- David
+('ACC10002', 250.00, 'ACTIVA', 1),    -- David
+('ACC20001', 500.00, 'ACTIVA', 2),    -- Ana
+('ACC30001', 750.00, 'ACTIVA', 3),    -- Luis
+('ACC40001', 1200.00, 'ACTIVA', 4);   -- Carla
+
+INSERT INTO movimientos (tipo_movimiento, cuenta_salida_id, cuenta_entrada_id, monto, nota) VALUES
+('APERTURA', NULL, 1, 1000.00, 'Saldo inicial cuenta ACC10001'),
+('APERTURA', NULL, 2, 250.00, 'Saldo inicial cuenta ACC10002'),
+('APERTURA', NULL, 3, 500.00, 'Saldo inicial cuenta ACC20001'),
+('APERTURA', NULL, 4, 750.00, 'Saldo inicial cuenta ACC30001'),
+('APERTURA', NULL, 5, 1200.00, 'Saldo inicial cuenta ACC40001');
+
+
+
 -- PRUEBAS DEL PROCEDIMIENTO
 
 -- Inicio de sesión exitoso
