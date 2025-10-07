@@ -64,8 +64,8 @@ class UserController():
         self.create_account_view = CreateAccountView(self)
         self.create_account_view.mainloop()
 
-    def show_transfer_funds_window(self):
-        self.transfer_funds_view = TransferFundsView(self)
+    def show_transfer_funds_window(self, id):
+        self.transfer_funds_view = TransferFundsView(self, id)
         self.transfer_funds_view.mainloop()
 
     def show_consult_balance_window(self):
@@ -130,3 +130,9 @@ class UserController():
         if user_details:
             return user_details.get("username", "Usuario")
         return "Usuario"
+
+    def get_user_id(self, email):
+        user_details = self.user_model.get_user_details(email)
+        if user_details:
+            return user_details.get("id", None)
+        return None

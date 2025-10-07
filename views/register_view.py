@@ -25,16 +25,19 @@ class RegisterView(tkinter.Toplevel):
 
         self.register_button = tkinter.Button(self, text="Registrar", command=self.register_button_clicked)
 
-        self.username_label.grid(row=0, column=0, padx=10, pady=10)
-        self.username_entry.grid(row=0, column=1, padx=10, pady=10)
+        self.email_label.grid(row=0, column=0, padx=10, pady=10)
+        self.email_entry.grid(row=0, column=1, padx=10, pady=10)
         
-        self.lastname_label.grid(row=1, column=0, padx=10, pady=10)
-        self.lastname_entry.grid(row=1, column=1, padx=10, pady=10)
+        self.username_label.grid(row=1, column=0, padx=10, pady=10)
+        self.username_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        self.password_label.grid(row=2, column=0, padx=10, pady=10)
-        self.password_entry.grid(row=2, column=1, padx=10, pady=10)
+        self.lastname_label.grid(row=2, column=0, padx=10, pady=10)
+        self.lastname_entry.grid(row=2, column=1, padx=10, pady=10)
 
-        self.register_button.grid(row=3, columnspan=2, pady=20)
+        self.password_label.grid(row=3, column=0, padx=10, pady=10)
+        self.password_entry.grid(row=3, column=1, padx=10, pady=10)
+
+        self.register_button.grid(row=4, columnspan=2, pady=20)
 
 
 

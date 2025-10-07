@@ -107,6 +107,8 @@ class UserModel:
                 conn.close()
                 
     def make_transfer(self, from_account_id, to_account_id, amount, note):
+        print("Making transfer...")
+        print(from_account_id, to_account_id, amount, note)
         conn = DBConnector.get_connection()
         if conn is None:
             return False

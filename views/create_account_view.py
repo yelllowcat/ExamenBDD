@@ -4,7 +4,7 @@ class CreateAccountView(tkinter.Tk):
     def __init__(self, user_controller):
         super().__init__()
         self.title("Crear Cuenta")
-        self.geometry("400x200")
+        self.geometry("400x300")
         self.resizable(width=False, height=False)
         self.controller = user_controller
 

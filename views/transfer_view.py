@@ -2,14 +2,14 @@ import tkinter
 from tkinter import ttk, messagebox
 
 class TransferView(tkinter.Tk):
-    def __init__(self, user_controller):
+    def __init__(self, user_controller, id):
         super().__init__()
         self.title("Transferir Fondos")
         self.geometry("450x450")
         self.resizable(width=False, height=False)
         self.configure(bg="#f5f5f5")
         self.controller = user_controller
-
+        self.id = id
         # Frame principal
         main_frame = tkinter.Frame(self, bg="#f5f5f5")
         main_frame.pack(pady=30, padx=30, fill=tkinter.BOTH, expand=True)
@@ -83,7 +83,7 @@ class TransferView(tkinter.Tk):
         self.transfer_button = tkinter.Button(
             main_frame,
             text="Transferir",
-            command=self.transfer,
+            command=lambda: self.transfer_funds(self.id),  # <-- pasa el id aquí
             bg="#27ae60",
             fg="white",
             font=("Arial", 11, "bold"),
@@ -113,8 +113,8 @@ class TransferView(tkinter.Tk):
         if not amount or not to_account_id:
             messagebox.showerror("Error", "Por favor, complete todos los campos.")
             return
-        
-        if self.controller.handle_transfer(amount, from_account_id=1, to_account_id=to_account_id, note=self.note_entry.get()):
+
+        if self.controller.handle_transfer(amount, from_account_id=self.id, to_account_id=to_account_id, note=self.note_entry.get()):
             messagebox.showinfo("Éxito", f"Transferencia de ${amount} a la cuenta {to_account_id} realizada con éxito.")
             self.destroy()
         else:
