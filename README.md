@@ -2,20 +2,24 @@
 
 Sistema de gestión bancaria desarrollado en Python con interfaz gráfica Tkinter y base de datos MySQL. Permite a los usuarios registrarse, iniciar sesión, crear cuentas bancarias, realizar transferencias y consultar el historial de transacciones.
 
+## 👥 Integrantes del Equipo
+
+- **David González** - Responsable del proyecto
+
 ## 📋 Tabla de Contenidos
 
+- [Integrantes del Equipo](#integrantes-del-equipo)
 - [Características](#características)
-- [Descarga Rápida](#descarga-rápida)
 - [Requisitos Previos](#requisitos-previos)
-- [Instalación](#instalación)
-- [Configuración](#configuración)
+- [Instalación y Configuración](#instalación-y-configuración)
+- [Ejecutar la Base de Datos](#ejecutar-la-base-de-datos)
+- [Ejecutar la Aplicación](#ejecutar-la-aplicación)
+- [Usuarios y Cuentas de Prueba](#usuarios-y-cuentas-de-prueba)
+- [Ejemplos de Operaciones](#ejemplos-de-operaciones)
 - [Estructura del Proyecto](#estructura-del-proyecto)
-- [Uso](#uso)
 - [Base de Datos](#base-de-datos)
 - [Arquitectura](#arquitectura)
-- [Funcionalidades](#funcionalidades)
 - [Compilar Ejecutable](#compilar-ejecutable)
-- [Contribuir](#contribuir)
 
 ## ✨ Características
 
@@ -40,64 +44,244 @@ Sistema de gestión bancaria desarrollado en Python con interfaz gráfica Tkinte
   - Visualización detallada de transferencias entrantes y salientes
   - Filtrado por cuenta
 
-## 🚀 Descarga Rápida
-
-¿Solo quieres usar la aplicación sin instalar Python? Descarga el ejecutable:
-
-- **Linux**: [SistemaBancario-Linux-v1.0.tar.gz](https://github.com/yelllowcat/ExamenBDD/releases)
-- **Windows**: Compila desde el código fuente (ver [COMPILAR.md](COMPILAR.md))
-- **macOS**: Compila desde el código fuente (ver [COMPILAR.md](COMPILAR.md))
-
-**Requisitos mínimos**: MySQL 5.7+ instalado y configurado.
-
-Ver [INSTRUCCIONES_EJECUTABLE.md](INSTRUCCIONES_EJECUTABLE.md) para instrucciones de instalación del ejecutable.
-
 ## 🔧 Requisitos Previos
 
-- Python 3.8 o superior
-- MySQL 5.7 o superior
-- pip (gestor de paquetes de Python)
+- **Python 3.8 o superior**
+- **MySQL 5.7 o superior**
+- **pip** (gestor de paquetes de Python)
 
-## 📦 Instalación
+## 📦 Instalación y Configuración
 
-1. **Clonar el repositorio**
-   ```bash
-   git clone https://github.com/yelllowcat/ExamenBDD.git
-   cd ExamenBDD
-   ```
+### Paso 1: Clonar el repositorio
 
-2. **Crear entorno virtual (recomendado)**
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # En Linux/Mac
-   # o
-   .venv\Scripts\activate  # En Windows
-   ```
+```bash
+git clone https://github.com/yelllowcat/ExamenBDD.git
+cd ExamenBDD
+```
 
-3. **Instalar dependencias**
-   ```bash
-   pip install mysql-connector-python python-dotenv
-   ```
+### Paso 2: Crear entorno virtual (recomendado)
 
-## ⚙️ Configuración
+```bash
+python -m venv .venv
+source .venv/bin/activate  # En Linux/Mac
+# o
+.venv\Scripts\activate  # En Windows
+```
 
-1. **Configurar la base de datos**
-   
-   Ejecutar el script SQL para crear la base de datos y los procedimientos almacenados:
-   ```bash
-   mysql -u root -p < examenPythonBD.sql
-   ```
+### Paso 3: Instalar dependencias
 
-2. **Configurar variables de entorno**
-   
-   Crear un archivo `.env` en la raíz del proyecto con las siguientes variables:
-   ```env
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_NAME=fintech
-   DB_USER=tu_usuario
-   DB_PASSWORD=tu_contraseña
-   ```
+```bash
+pip install mysql-connector-python python-dotenv
+```
+
+### Paso 4: Configurar variables de entorno
+
+Crear un archivo `.env` en la raíz del proyecto:
+
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=fintech
+DB_USER=root
+DB_PASSWORD=tu_contraseña_mysql
+```
+
+**Importante**: Reemplaza `tu_contraseña_mysql` con tu contraseña real de MySQL.
+
+## 🗄️ Ejecutar la Base de Datos
+
+### Opción 1: Desde la línea de comandos
+
+```bash
+mysql -u root -p < examenPythonBD.sql
+```
+
+Ingresa tu contraseña de MySQL cuando se te solicite.
+
+### Opción 2: Desde el cliente MySQL
+
+```bash
+# Acceder a MySQL
+mysql -u root -p
+
+# Dentro de MySQL, ejecutar:
+source /ruta/completa/a/examenPythonBD.sql
+# o en Windows:
+\. C:\ruta\completa\a\examenPythonBD.sql
+```
+
+### Verificar la instalación
+
+```sql
+-- Mostrar bases de datos
+SHOW DATABASES;
+
+-- Usar la base de datos
+USE fintech;
+
+-- Verificar tablas
+SHOW TABLES;
+
+-- Verificar procedimientos almacenados
+SHOW PROCEDURE STATUS WHERE Db = 'fintech';
+```
+
+Deberías ver:
+- **Base de datos**: `fintech`
+- **Tablas**: `usuarios`, `cuentas`, `movimientos`
+- **Procedimientos**: `registrar_usuario`, `iniciar_sesion`, `obtener_detalles_usuario`, `abrir_cuenta`, `transferir_dinero`
+
+## 🚀 Ejecutar la Aplicación
+
+Una vez configurada la base de datos y el archivo `.env`:
+
+```bash
+# Asegúrate de estar en el directorio del proyecto
+cd ExamenBDD
+
+# Activar entorno virtual (si lo usas)
+source .venv/bin/activate  # Linux/Mac
+.venv\Scripts\activate     # Windows
+
+# Ejecutar la aplicación
+python main.py
+```
+
+La ventana de inicio de sesión debería aparecer.
+
+## 👤 Usuarios y Cuentas de Prueba
+
+El script SQL incluye usuarios y cuentas de prueba pre-configurados:
+
+### Usuarios Registrados
+
+| Email | Contraseña | Nombre Completo |
+|-------|------------|-----------------|
+| david@mail.com | hash123 | David González |
+| ana@mail.com | hash456 | Ana López |
+| luis@mail.com | hash789 | Luis Martínez |
+| carla@mail.com | hash101 | Carla Fernández |
+
+### Cuentas Bancarias
+
+| Número de Cuenta | Saldo Inicial | Propietario | Estado |
+|------------------|---------------|-------------|--------|
+| ACC10001 | $1,000.00 | David González | ACTIVA |
+| ACC10002 | $250.00 | David González | ACTIVA |
+| ACC20001 | $500.00 | Ana López | ACTIVA |
+| ACC30001 | $750.00 | Luis Martínez | ACTIVA |
+| ACC40001 | $1,200.00 | Carla Fernández | ACTIVA |
+
+## 💡 Ejemplos de Operaciones
+
+### 1. Iniciar Sesión
+
+1. Ejecutar `python main.py`
+2. Ingresar credenciales:
+   - **Email**: `david@mail.com`
+   - **Contraseña**: `hash123`
+3. Click en "Iniciar Sesión"
+
+### 2. Crear Nueva Cuenta Bancaria (Apertura)
+
+1. Desde la pantalla principal, click en **"Crear Cuenta"**
+2. Ingresar saldo inicial: `5000`
+3. Click en **"Crear Cuenta"**
+4. Se generará automáticamente un número de cuenta único
+5. Se registrará un movimiento de tipo **APERTURA**
+
+**Resultado esperado**:
+- Nueva cuenta creada con saldo de $5,000.00
+- Número de cuenta generado (formato: `1001-XXXX-XXXX-XXXX`)
+- Movimiento de apertura registrado en el historial
+
+### 3. Realizar Transferencia
+
+1. Desde la pantalla principal, click en **"Transferir"**
+2. Completar el formulario:
+   - **Monto**: `500`
+   - **Transferir a (ID de Cuenta)**: Seleccionar cuenta destino (ej: `2`)
+   - **Nota**: `Pago de servicios` (opcional)
+3. Click en **"Transferir"**
+
+**Resultado esperado**:
+- Se resta $500.00 de tu cuenta
+- Se suma $500.00 a la cuenta destino
+- Se registran 2 movimientos:
+  - **TRANSFERENCIA_SALIDA** en tu cuenta
+  - **TRANSFERENCIA_ENTRADA** en la cuenta destino
+
+**Validaciones automáticas**:
+- ✅ Verifica fondos suficientes
+- ✅ Verifica que ambas cuentas estén activas
+- ✅ Verifica que no se transfiera a la misma cuenta
+- ✅ Verifica que el monto sea mayor a cero
+
+### 4. Consultar Historial de Movimientos
+
+1. Desde la pantalla principal, seleccionar una cuenta del desplegable
+2. Click en **"Consultar Historial"**
+3. Se mostrará una tabla con todas las transacciones:
+   - ID del movimiento
+   - Tipo de movimiento
+   - Cuenta de salida
+   - Cuenta de entrada
+   - Monto
+   - Fecha y hora
+   - Nota
+
+**Tipos de movimientos que verás**:
+- **APERTURA**: Creación de la cuenta
+- **TRANSFERENCIA_SALIDA**: Dinero que sale de tu cuenta
+- **TRANSFERENCIA_ENTRADA**: Dinero que entra a tu cuenta
+
+### 5. Ejemplo Completo de Flujo
+
+```
+1. Iniciar sesión con david@mail.com / hash123
+2. Ver cuentas disponibles: ACC10001 ($1,000.00) y ACC10002 ($250.00)
+3. Crear nueva cuenta con saldo inicial de $5,000.00
+4. Transferir $200.00 de ACC10001 a cuenta de Ana (ID: 3)
+5. Consultar historial de ACC10001 para ver la transferencia
+6. Cerrar sesión
+```
+
+### Ejemplo desde MySQL (Consultas Directas)
+
+```sql
+-- Ver todos los usuarios
+SELECT * FROM usuarios;
+
+-- Ver todas las cuentas
+SELECT 
+    c.numero_cuenta,
+    c.saldo,
+    c.estado,
+    u.nombre,
+    u.apellidos
+FROM cuentas c
+JOIN usuarios u ON c.usuario_id = u.id;
+
+-- Ver historial de movimientos
+SELECT 
+    m.id,
+    m.tipo_movimiento,
+    cs.numero_cuenta AS cuenta_salida,
+    ce.numero_cuenta AS cuenta_entrada,
+    m.monto,
+    m.fecha_operacion,
+    m.nota
+FROM movimientos m
+LEFT JOIN cuentas cs ON m.cuenta_salida_id = cs.id
+LEFT JOIN cuentas ce ON m.cuenta_entrada_id = ce.id
+ORDER BY m.fecha_operacion DESC;
+
+-- Realizar una transferencia manualmente
+CALL transferir_dinero(1, 2, 100.00, 'Transferencia de prueba');
+
+-- Ver saldo de una cuenta específica
+SELECT numero_cuenta, saldo FROM cuentas WHERE numero_cuenta = 'ACC10001';
+```
 
 ## 📁 Estructura del Proyecto
 
