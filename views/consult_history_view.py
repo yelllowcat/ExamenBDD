@@ -2,13 +2,13 @@ import tkinter
 from tkinter import ttk
 
 class ConsultHistoryView(tkinter.Tk):
-    def __init__(self, user_controller):
+    def __init__(self, user_controller, id):
         super().__init__()
         self.title("Consultar Historial")
         self.geometry("900x500")
         self.resizable(width=True, height=True)
         self.controller = user_controller
-
+        self.id = id
         # Título
         self.history_label = tkinter.Label(
             self, 
@@ -83,7 +83,7 @@ class ConsultHistoryView(tkinter.Tk):
 
     def load_history(self):
         """Cargar el historial de transacciones"""
-        history = self.controller.get_transaction_history()
+        history = self.controller.get_transaction_history(self.id)
         
         for index, record in enumerate(history):
             # record debe ser una tupla con los 7 valores:

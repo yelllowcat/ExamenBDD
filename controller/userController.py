@@ -33,12 +33,18 @@ class UserController():
             self.home_view = HomeView(self, email)
         self.home_view.lift()
 
-    def handle_register(self, username, firstname, lastname, password, window):
-        if not all([username, firstname, lastname, password]):
+    def show_login_window(self):
+        if self.login_view is None or not self.login_view.winfo_exists():
+            self.login_view = LoginView(self)
+        self.login_view.lift()
+        self.home_view.destroy()
+
+    def handle_register(self, email, firstname, lastname, password, window):
+        if not all([email, firstname, lastname, password]):
             messagebox.showerror("Error", "Todos los campos son obligatorios!")
             return
         
-        if self.user_model.create_user(username, firstname, lastname, password):
+        if self.user_model.create_user(email, firstname, lastname, password):
             messagebox.showinfo("Success", "User registered successfully! You can now log in.")
             window.destroy()
 
@@ -57,25 +63,42 @@ class UserController():
     def handle_create_account(self, initial_balance, user_id):
         if self.user_model.open_account(initial_balance, user_id):
             messagebox.showinfo("Success", "Account created successfully!")
+            # Close the create account window if it's open
+            try:
+                if self.create_account_view is not None and self.create_account_view.winfo_exists():
+                    self.create_account_view.destroy()
+            except Exception:
+                pass
+            # Refresh the home view accounts and bring it to front
+            if self.home_view is not None and self.home_view.winfo_exists():
+                try:
+                    self.home_view.refresh_accounts()
+                    self.home_view.lift()
+                    self.home_view.focus_force()
+                except Exception:
+                    pass
         else:
             messagebox.showerror("Error", "Error creating account.")
     
-    def show_create_account_window(self):
-        self.create_account_view = CreateAccountView(self)
+    def show_create_account_window(self, id):
+        self.create_account_view = CreateAccountView(self, id)
         self.create_account_view.mainloop()
 
     def show_transfer_funds_window(self, id):
+        print("id in controller", id)
+        print("self", self)
         self.transfer_funds_view = TransferFundsView(self, id)
         self.transfer_funds_view.mainloop()
 
-    def show_consult_balance_window(self):
-        self.consult_balance_view = ConsultHistoryView(self)
+    def show_consult_balance_window(self, id):
+        self.consult_balance_view = ConsultHistoryView(self, id)
         self.consult_balance_view.mainloop()
         
     def get_all_account_ids(self):
         return self.user_model.get_all_account_ids()
 
     def handle_transfer(self, amount, from_account_id, to_account_id, note):
+        print(amount, from_account_id, to_account_id, note)
         if not all([amount, from_account_id, to_account_id]):
             messagebox.showerror("Error", "Por favor, complete todos los campos.")
             return
@@ -85,8 +108,8 @@ class UserController():
         else:
             messagebox.showerror("Error", "Error al realizar la transferencia.")
 
-    def get_transaction_history(self):
-        return self.user_model.get_transaction_history()
+    def get_transaction_history(self, id):
+        return self.user_model.get_transaction_history(id)
 
 
     def populate_user_accounts(self, email, combobox):
@@ -133,6 +156,7 @@ class UserController():
 
     def get_user_id(self, email):
         user_details = self.user_model.get_user_details(email)
+        print("user_details", user_details)
         if user_details:
             return user_details.get("id", None)
         return None

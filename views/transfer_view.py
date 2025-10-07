@@ -8,8 +8,9 @@ class TransferView(tkinter.Tk):
         self.geometry("450x450")
         self.resizable(width=False, height=False)
         self.configure(bg="#f5f5f5")
-        self.controller = user_controller
+        self.user_controller = user_controller
         self.id = id
+        print ("id in transfer", self.id)
         # Frame principal
         main_frame = tkinter.Frame(self, bg="#f5f5f5")
         main_frame.pack(pady=30, padx=30, fill=tkinter.BOTH, expand=True)
@@ -52,7 +53,7 @@ class TransferView(tkinter.Tk):
         )
         transfer_to_label.pack(fill=tkinter.X, pady=(0, 5))
 
-        account_options = self.controller.get_all_account_ids()
+        account_options = self.user_controller.get_all_account_ids()
         self.transfer_to_combobox = ttk.Combobox(
             main_frame,
             values=account_options,
@@ -83,7 +84,7 @@ class TransferView(tkinter.Tk):
         self.transfer_button = tkinter.Button(
             main_frame,
             text="Transferir",
-            command=lambda: self.transfer_funds(self.id),  # <-- pasa el id aquí
+            command=lambda: self.transfer(self.id),  # <-- pasa el id aquí
             bg="#27ae60",
             fg="white",
             font=("Arial", 11, "bold"),
@@ -106,15 +107,15 @@ class TransferView(tkinter.Tk):
         )
         self.logout_button.pack(fill=tkinter.X)
 
-    def transfer(self):
+    def transfer(self,id):
         amount = self.amount_entry.get()
         to_account_id = self.transfer_to_combobox.get()
         
         if not amount or not to_account_id:
             messagebox.showerror("Error", "Por favor, complete todos los campos.")
             return
-
-        if self.controller.handle_transfer(amount, from_account_id=self.id, to_account_id=to_account_id, note=self.note_entry.get()):
+        print("id in transfer method", id)
+        if self.user_controller.handle_transfer(amount, from_account_id=id, to_account_id=to_account_id, note=self.note_entry.get()):
             messagebox.showinfo("Éxito", f"Transferencia de ${amount} a la cuenta {to_account_id} realizada con éxito.")
             self.destroy()
         else:

@@ -12,7 +12,7 @@ class UserModel:
             return False
         try:
             cursor = conn.cursor()
-            args = (username, password, firstname, lastname);
+            args = (username, firstname, lastname, password);
             cursor.callproc("registrar_usuario", args)
             conn.commit()
             return True
@@ -77,9 +77,10 @@ class UserModel:
                 user = result.fetchone()
                 if user:
                     return {
-                        "username": user[0],
-                        "firstname": user[1],
-                        "lastname": user[2]
+                        "id": user[0],
+                        "username": user[1],
+                        "firstname": user[2],
+                        "lastname": user[3]
                     }
                 else:
                     return None
@@ -125,24 +126,28 @@ class UserModel:
             if conn.is_connected(): 
                 conn.close()
                 
-    def get_transaction_history(self):
+    def get_transaction_history(self, id):
         conn = DBConnector.get_connection()
         if conn is None:
             return []
         try:
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT 
-                    id, 
-                    tipo_movimiento, 
-                    cuenta_salida_id, 
-                    cuenta_entrada_id, 
-                    monto, 
-                    fecha_operacion, 
-                    nota 
-                FROM movimientos 
-                ORDER BY fecha_operacion DESC
-            """)
+            SELECT 
+                m.id,
+                m.tipo_movimiento,
+                cs.numero_cuenta AS cuenta_salida,
+                ce.numero_cuenta AS cuenta_entrada,
+                m.monto,
+                m.fecha_operacion,
+                m.nota
+            FROM movimientos m
+            LEFT JOIN cuentas cs ON m.cuenta_salida_id = cs.id
+            LEFT JOIN cuentas ce ON m.cuenta_entrada_id = ce.id
+            WHERE cs.numero_cuenta = %s
+               OR ce.numero_cuenta = %s
+            ORDER BY m.fecha_operacion DESC;
+            """, (id, id))
 
             transactions = cursor.fetchall()
             return transactions  # Devuelve las tuplas directamente

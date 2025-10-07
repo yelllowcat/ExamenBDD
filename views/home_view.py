@@ -1,7 +1,7 @@
 import tkinter
 from tkinter import ttk
 
-class HomeView(tkinter.Toplevel):
+class HomeView(tkinter.Tk):
     def __init__(self, user_controller, email ):
         super().__init__()
         self.title("Home")
@@ -12,6 +12,8 @@ class HomeView(tkinter.Toplevel):
         self.username = user_controller.get_username(email)
         self.email = email
         self.id = user_controller.get_user_id(email)
+        print("Current User id in HomeView:", self.id)  # Debugging line
+        
         # Frame principal
         main_frame = tkinter.Frame(self, bg="#f5f5f5")
         main_frame.pack(pady=20, padx=20, fill=tkinter.BOTH, expand=True)
@@ -78,7 +80,7 @@ class HomeView(tkinter.Toplevel):
         self.transfer_funds_button = tkinter.Button(
             buttons_frame,
             text="Transferir",
-            command=self.transfer_funds(self.id),
+            command= self.transfer_funds,
             bg="#27ae60",
             fg="white",
             font=("Arial", 11, "bold"),
@@ -123,10 +125,15 @@ class HomeView(tkinter.Toplevel):
         self.destroy()
         
     def create_account(self):
-        self.user_controller.show_create_account_window()
-    
-    def transfer_funds(self,id):
-        self.user_controller.show_transfer_funds_window(id)
+        self.user_controller.show_create_account_window(self.id)
+    def transfer_funds(self):
+        print("id passed", self.id)
+        self.user_controller.show_transfer_funds_window(self.id)
 
     def consult_balance(self):
-        self.user_controller.show_consult_balance_window()
+        self.user_controller.show_consult_balance_window(self.accounts_listbox.get().split()[0])
+
+    def refresh_accounts(self):
+        """Reload user's accounts into the combobox."""
+        # Ensure the combobox reflects the latest accounts from DB
+        self.user_controller.populate_user_accounts(self.email, self.accounts_listbox)
