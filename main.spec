@@ -1,6 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
+import sys
 
 block_cipher = None
+
+# Exclude problematic modules that cause issues on Windows
+excludes = [
+    '_curses',
+    'curses',
+    'curses.ascii',
+    'curses.textpad',
+    'curses.panel',
+    'readline',
+]
 
 a = Analysis(
     ['main.py'],
@@ -10,8 +21,8 @@ a = Analysis(
     hiddenimports=['mysql.connector', 'dotenv', '_mysql_connector'],
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=[],
-    excludes=['_curses', 'curses', 'readline'],
+    runtime_hooks=['pyi_rth_curses.py'],
+    excludes=excludes,
     noarchive=False,
     optimize=0,
 )
